@@ -1,0 +1,1 @@
+/// <reference types="@esri/calcite-components/dist/types/react" />

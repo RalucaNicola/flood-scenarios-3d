@@ -1,0 +1,63 @@
+.containerBottom {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.containerTop {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 50%;
+    overflow: hidden;
+}
+
+.swipe {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -10px;
+    width: 3px;
+    background: rgb(101, 101, 101);
+    border: 9px solid rgba(255, 255, 255, 0.3);
+    border-bottom: none;
+    border-top: none;
+    background-clip: content-box;
+    cursor: col-resize;
+    z-index: 1;
+    transition: border 200ms ease;
+}
+
+.swipe:hover {
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+.swiperLeft,
+.swiperRight {
+    height: 30px;
+    width: 2px;
+    background-color: rgb(101, 101, 101, 0.8);
+    position: absolute;
+    top: 50%;
+    margin-left: -5px;
+    margin-top: -15px;
+    pointer-events: none;
+}
+
+.swiperRight {
+    margin-left: 6px;
+}
+
+.viewBottom {
+    height: 100%;
+    width: 100%;
+}
+
+.viewTop {
+    height: 100%;
+    width: 100vw;
+}
