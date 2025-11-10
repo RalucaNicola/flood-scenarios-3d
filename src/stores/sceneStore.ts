@@ -14,6 +14,7 @@
  */
 
 import { action, makeAutoObservable, makeObservable, observable, reaction } from "mobx";
+import * as reactiveUtils from "@arcgis/core/core/reactiveUtils";
 
 
 class SceneStore {
@@ -23,9 +24,23 @@ class SceneStore {
 
     constructor() {
         makeObservable(this, {
+            view1: observable,
+            view2: observable,
+            setView1: action,
+            setView2: action,
             viewsLoaded: observable,
             setViewsLoaded: action
         });
+
+        reaction(
+            () => this.view1 && this.view2,
+            (bothViewsReady) => {
+                if (bothViewsReady) {
+                    this.setViewsLoaded();
+                    this.syncViews();
+                }
+            }
+        );
     }
 
     setViewsLoaded() {
@@ -39,7 +54,48 @@ class SceneStore {
     setView2(view: __esri.SceneView) {
         this.view2 = view;
     }
+
+    syncViews() {
+        _syncViews(this.view1, this.view2);
+        _syncViews(this.view2, this.view1);
+    }
 }
 
 const sceneStore = new SceneStore();
 export default sceneStore;
+
+function _syncViews(view1: __esri.SceneView, view2: __esri.SceneView) {
+    let viewpointWatchHandle : __esri.WatchHandle;
+    let viewStationaryHandle: __esri.Handle;
+    let interactWatcher;
+    let scheduleId: NodeJS.Timeout;
+
+    function clear() {
+      viewpointWatchHandle && viewpointWatchHandle.remove();
+      viewStationaryHandle && viewStationaryHandle.remove();
+      scheduleId && clearTimeout(scheduleId);
+      viewpointWatchHandle = viewStationaryHandle = scheduleId = null;
+    }
+
+    interactWatcher = reactiveUtils.watch(() => view1.interacting || view1.animation, function(newValue: boolean | __esri.ViewAnimation) {
+      if (!newValue) {
+        return;
+      }
+
+      if (viewpointWatchHandle || scheduleId) {
+        return;
+      }
+
+      scheduleId = setTimeout(function() {
+        scheduleId = null;
+        viewpointWatchHandle = reactiveUtils.watch(() => view1.viewpoint,
+          function(newValue: __esri.Viewpoint) {
+            view2.viewpoint = newValue;
+          });
+      }, 0);
+
+      viewStationaryHandle = reactiveUtils.when(() => view1.stationary,
+        clear);
+
+    });
+}
