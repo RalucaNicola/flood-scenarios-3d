@@ -14,7 +14,7 @@
  */
 
 export const mapConfig = {
-  webscene1: '1e61b02dc109446382fe6c5674c8f4dd',
+  webscene1: 'd5e9a555d1ae47af8a7c49c9017fa2d5',
   webscene2: 'd2d99f661b5f41268eba20d2632aa913'
 };
 
